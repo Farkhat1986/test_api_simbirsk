@@ -2,31 +2,37 @@ import pytest
 from endpoint.create_object import CreateObject
 from endpoint.delete_object import DeleteObject
 from generators.entity import EntityGenerator
+from schemas.entity import EntityCreateRequest
 
 
-@pytest.fixture()
+@pytest.fixture
 def create_entity():
+    creator = CreateObject()
+    deleter = DeleteObject()
 
-    create_endpoint = CreateObject()
-    payload = EntityGenerator.entity_generator()
-    create_endpoint.create_entity(payload)
-    yield create_endpoint.response_txt, payload
+    # Создаем сущность с валидацией
+    payload = EntityCreateRequest.model_validate(EntityGenerator.entity_generator())
+    entity = creator.create_entity(payload.model_dump())
 
-    delete_endpoint = DeleteObject()
-    delete_endpoint.delete_entity_by_id(create_endpoint.response_txt)
+    yield entity
+
+    # Очистка
+    deleter.delete_entity_by_id(entity.id)
 
 
-@pytest.fixture()
+@pytest.fixture
 def create_multiple_entities():
-
-    create_endpoint = CreateObject()
+    creator = CreateObject()
+    deleter = DeleteObject()
     entities = []
+
     for _ in range(3):
-        payload = EntityGenerator.entity_generator()
-        create_endpoint.create_entity(payload)
-        entities.append((create_endpoint.response_txt, payload))
+        payload = EntityCreateRequest.model_validate(EntityGenerator.entity_generator())
+        entity = creator.create_entity(payload.model_dump())
+        entities.append(entity)
+
     yield entities
 
-    delete_endpoint = DeleteObject()
-    for entity_id, _ in entities:
-        delete_endpoint.delete_entity_by_id(entity_id)
+    # Очистка
+    for entity in entities:
+        deleter.delete_entity_by_id(entity.id)
