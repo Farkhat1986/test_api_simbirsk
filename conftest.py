@@ -8,7 +8,7 @@ from generators.entity import EntityGenerator
 def create_entity():
 
     create_endpoint = CreateObject()
-    payload = EntityGenerator.random()
+    payload = EntityGenerator.entity_generator()
     create_endpoint.create_entity(payload)
     yield create_endpoint.response_txt, payload
 
@@ -22,7 +22,7 @@ def create_multiple_entities():
     create_endpoint = CreateObject()
     entities = []
     for _ in range(3):
-        payload = EntityGenerator.random()
+        payload = EntityGenerator.entity_generator()
         create_endpoint.create_entity(payload)
         entities.append((create_endpoint.response_txt, payload))
     yield entities

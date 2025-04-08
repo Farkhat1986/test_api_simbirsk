@@ -63,7 +63,7 @@ def test_check_entity_in_list_after_creation(create_entity):
 def test_update_entity_and_verify(create_entity):
     entity_id, _ = create_entity
     update_endpoint = UpdateObject()
-    new_payload = EntityGenerator.random()
+    new_payload = EntityGenerator.entity_generator()
 
     with allure.step("Обновить сущность"):
         update_endpoint.update_entity_by_id(entity_id, new_payload)
